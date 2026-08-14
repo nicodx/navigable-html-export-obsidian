@@ -1,0 +1,55 @@
+/* Navigable HTML Export Modal and Settings Styles */
+.navigable-html-export-modal {
+  padding: 10px;
+}
+
+.navigable-html-export-modal h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--text-normal);
+}
+
+.navigable-html-export-modal .modal-description {
+  margin-bottom: 20px;
+  color: var(--text-muted);
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.navigable-html-export-modal .feature-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--background-secondary);
+  color: var(--text-accent);
+  font-size: 0.8em;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+.navigable-html-export-modal .modal-button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.navigable-html-export-modal .donate-footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.navigable-html-export-modal .donate-footer a {
+  color: var(--text-accent);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navigable-html-export-modal .donate-footer a:hover {
+  text-decoration: underline;
+}

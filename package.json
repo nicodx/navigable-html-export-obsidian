@@ -1,0 +1,32 @@
+{
+  "name": "navigable-html-export",
+  "version": "1.0.0",
+  "description": "Export Obsidian notes to modern, responsive, and fully self-contained navigable HTML files.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "test": "node esbuild.config.mjs production"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "html-export",
+    "latex",
+    "responsive",
+    "standalone"
+  ],
+  "author": "Nico",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/node": "^20.11.0",
+    "esbuild": "^0.20.0",
+    "obsidian": "latest",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "katex": "0.16.21"
+  }
+}

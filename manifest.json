@@ -1,0 +1,11 @@
+{
+  "id": "navigable-html-export",
+  "name": "Navigable HTML Export",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Export Obsidian notes to modern, responsive, and fully self-contained navigable HTML files with KaTeX math, properties, interactive table of contents, and dark/light mode.",
+  "author": "Nico",
+  "authorUrl": "https://github.com/nicodx",
+  "fundingUrl": "https://buymeacoffee.com/nicodx",
+  "isDesktopOnly": false
+}

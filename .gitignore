@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Obsidian Local Data
+data.json
+
+# Build outputs
+dist/
+*.log
+.DS_Store
+Thumbs.db
