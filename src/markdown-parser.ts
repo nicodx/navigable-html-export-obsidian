@@ -74,25 +74,26 @@ export async function parseMarkdownToNavigableHtml(
     el.setAttribute('data-heading-level', String(level));
     el.classList.add('navigable-heading');
 
-    // Add collapse arrow icon button using DOM element creation
+    // Add collapse arrow icon button using Obsidian's createSvg helper
     const arrowSpan = createSpan({ cls: 'heading-collapse-btn' });
     arrowSpan.setAttribute('aria-label', 'Colapsar / Expandir sección');
     arrowSpan.setAttribute('title', 'Colapsar / Expandir sección');
     
-    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgEl.setAttribute('viewBox', '0 0 24 24');
-    svgEl.setAttribute('width', '16');
-    svgEl.setAttribute('height', '16');
-    svgEl.setAttribute('fill', 'none');
-    svgEl.setAttribute('stroke', 'currentColor');
-    svgEl.setAttribute('stroke-width', '2.5');
-    svgEl.setAttribute('stroke-linecap', 'round');
-    svgEl.setAttribute('stroke-linejoin', 'round');
-
-    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    polyline.setAttribute('points', '6 9 12 15 18 9');
-    svgEl.appendChild(polyline);
-    arrowSpan.appendChild(svgEl);
+    const svgEl = arrowSpan.createSvg('svg', {
+      attr: {
+        viewBox: '0 0 24 24',
+        width: '16',
+        height: '16',
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': '2.5',
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }
+    });
+    svgEl.createSvg('polyline', {
+      attr: { points: '6 9 12 15 18 9' }
+    });
 
     el.prepend(arrowSpan);
 
@@ -103,7 +104,7 @@ export async function parseMarkdownToNavigableHtml(
     });
   });
 
-  // 5. Post-process Code Blocks: Add copy button using DOM APIs
+  // 5. Post-process Code Blocks: Add copy button using Obsidian createSvg helper
   const codeBlocks = container.querySelectorAll('pre > code');
   codeBlocks.forEach((codeEl) => {
     const pre = codeEl.parentElement;
@@ -111,30 +112,25 @@ export async function parseMarkdownToNavigableHtml(
       const copyBtn = createEl('button', { cls: 'code-copy-btn' });
       copyBtn.setAttribute('aria-label', 'Copiar código');
 
-      const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svgEl.setAttribute('viewBox', '0 0 24 24');
-      svgEl.setAttribute('width', '14');
-      svgEl.setAttribute('height', '14');
-      svgEl.setAttribute('fill', 'none');
-      svgEl.setAttribute('stroke', 'currentColor');
-      svgEl.setAttribute('stroke-width', '2');
-      svgEl.setAttribute('stroke-linecap', 'round');
-      svgEl.setAttribute('stroke-linejoin', 'round');
+      const svgEl = copyBtn.createSvg('svg', {
+        attr: {
+          viewBox: '0 0 24 24',
+          width: '14',
+          height: '14',
+          fill: 'none',
+          stroke: 'currentColor',
+          'stroke-width': '2',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+        }
+      });
+      svgEl.createSvg('rect', {
+        attr: { x: '9', y: '9', width: '13', height: '13', rx: '2', ry: '2' }
+      });
+      svgEl.createSvg('path', {
+        attr: { d: 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' }
+      });
 
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', '9');
-      rect.setAttribute('y', '9');
-      rect.setAttribute('width', '13');
-      rect.setAttribute('height', '13');
-      rect.setAttribute('rx', '2');
-      rect.setAttribute('ry', '2');
-
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1');
-
-      svgEl.appendChild(rect);
-      svgEl.appendChild(path);
-      copyBtn.appendChild(svgEl);
       copyBtn.createSpan({ text: 'Copiar' });
 
       pre.classList.add('has-copy-btn');
