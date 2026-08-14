@@ -15,24 +15,25 @@ export function extractAndProtectLatex(content: string): {
   let blockIndex = 0;
 
   // 1. Process math blocks $$...$$ (multiline & single line)
-  let result = content.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+  let result = content.replace(/\$\$([\s\S]*?)\$\$/g, (_match: string, math: string): string => {
     const id = `LATEXBLOCKTOKEN${blockIndex++}END`;
+    const cleanMath = String(math).trim();
     latexBlocks.set(id, {
       id,
-      math: math.trim(),
+      math: cleanMath,
       displayMode: true,
     });
     return `\n\n${id}\n\n`;
   });
 
-  // 2. Process inline math $...$ (not preceded by \$ and no empty content)
-  result = result.replace(/(?<!\\)\$([^\$\n]+?)(?<!\\)\$/g, (match, math) => {
-    const trimmed = math.trim();
-    if (!trimmed) return match;
+  // 2. Process inline math $...$ (not preceded by \ and no empty content)
+  result = result.replace(/(?<!\\)\$([^$\n]+?)(?<!\\)\$/g, (match: string, math: string): string => {
+    const cleanMath = String(math).trim();
+    if (!cleanMath) return match;
     const id = `LATEXINLINETOKEN${blockIndex++}END`;
     latexBlocks.set(id, {
       id,
-      math: trimmed,
+      math: cleanMath,
       displayMode: false,
     });
     return id;
@@ -66,7 +67,7 @@ export function restoreAndRenderLatexInHtml(
       } else {
         result = result.split(id).join(wrapper);
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(`Error rendering KaTeX for formula: ${block.math}`, e);
       const fallback = `<span class="katex-error" title="KaTeX error">${block.math}</span>`;
       result = result.split(id).join(fallback);

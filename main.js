@@ -14648,11 +14648,12 @@ var KATEX_CSS = '@font-face{font-display:block;font-family:KaTeX_AMS;font-style:
 function extractAndProtectLatex(content) {
   const latexBlocks = /* @__PURE__ */ new Map();
   let blockIndex = 0;
-  let result = content.replace(/\$\$([\s\S]*?)\$\$/g, (match, math2) => {
+  let result = content.replace(/\$\$([\s\S]*?)\$\$/g, (_match, math2) => {
     const id = `LATEXBLOCKTOKEN${blockIndex++}END`;
+    const cleanMath = String(math2).trim();
     latexBlocks.set(id, {
       id,
-      math: math2.trim(),
+      math: cleanMath,
       displayMode: true
     });
     return `
@@ -14661,14 +14662,14 @@ ${id}
 
 `;
   });
-  result = result.replace(/(?<!\\)\$([^\$\n]+?)(?<!\\)\$/g, (match, math2) => {
-    const trimmed = math2.trim();
-    if (!trimmed)
+  result = result.replace(/(?<!\\)\$([^$\n]+?)(?<!\\)\$/g, (match, math2) => {
+    const cleanMath = String(math2).trim();
+    if (!cleanMath)
       return match;
     const id = `LATEXINLINETOKEN${blockIndex++}END`;
     latexBlocks.set(id, {
       id,
-      math: trimmed,
+      math: cleanMath,
       displayMode: false
     });
     return id;
@@ -14813,7 +14814,7 @@ async function parseMarkdownToNavigableHtml(app, markdown, sourceFile, renderLat
   if (embedImages) {
     contentToRender = await resolveAndEmbedAttachments(app, contentToRender, sourceFile.path);
   }
-  const container = document.createElement("div");
+  const container = createDiv();
   const component = new import_obsidian3.Component();
   component.load();
   try {
@@ -14842,15 +14843,22 @@ async function parseMarkdownToNavigableHtml(app, markdown, sourceFile, renderLat
     el.setAttribute("id", finalId);
     el.setAttribute("data-heading-level", String(level));
     el.classList.add("navigable-heading");
-    const arrowSpan = document.createElement("span");
-    arrowSpan.className = "heading-collapse-btn";
+    const arrowSpan = createSpan({ cls: "heading-collapse-btn" });
     arrowSpan.setAttribute("aria-label", "Colapsar / Expandir secci\xF3n");
     arrowSpan.setAttribute("title", "Colapsar / Expandir secci\xF3n");
-    arrowSpan.innerHTML = `
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    `;
+    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.setAttribute("viewBox", "0 0 24 24");
+    svgEl.setAttribute("width", "16");
+    svgEl.setAttribute("height", "16");
+    svgEl.setAttribute("fill", "none");
+    svgEl.setAttribute("stroke", "currentColor");
+    svgEl.setAttribute("stroke-width", "2.5");
+    svgEl.setAttribute("stroke-linecap", "round");
+    svgEl.setAttribute("stroke-linejoin", "round");
+    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    polyline.setAttribute("points", "6 9 12 15 18 9");
+    svgEl.appendChild(polyline);
+    arrowSpan.appendChild(svgEl);
     el.prepend(arrowSpan);
     headings.push({
       id: finalId,
@@ -14862,16 +14870,30 @@ async function parseMarkdownToNavigableHtml(app, markdown, sourceFile, renderLat
   codeBlocks.forEach((codeEl) => {
     const pre = codeEl.parentElement;
     if (pre && !pre.querySelector(".code-copy-btn")) {
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "code-copy-btn";
+      const copyBtn = createEl("button", { cls: "code-copy-btn" });
       copyBtn.setAttribute("aria-label", "Copiar c\xF3digo");
-      copyBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <span>Copiar</span>
-      `;
+      const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svgEl.setAttribute("viewBox", "0 0 24 24");
+      svgEl.setAttribute("width", "14");
+      svgEl.setAttribute("height", "14");
+      svgEl.setAttribute("fill", "none");
+      svgEl.setAttribute("stroke", "currentColor");
+      svgEl.setAttribute("stroke-width", "2");
+      svgEl.setAttribute("stroke-linecap", "round");
+      svgEl.setAttribute("stroke-linejoin", "round");
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", "9");
+      rect.setAttribute("y", "9");
+      rect.setAttribute("width", "13");
+      rect.setAttribute("height", "13");
+      rect.setAttribute("rx", "2");
+      rect.setAttribute("ry", "2");
+      const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path2.setAttribute("d", "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1");
+      svgEl.appendChild(rect);
+      svgEl.appendChild(path2);
+      copyBtn.appendChild(svgEl);
+      copyBtn.createSpan({ text: "Copiar" });
       pre.classList.add("has-copy-btn");
       pre.appendChild(copyBtn);
     }
@@ -16317,9 +16339,10 @@ ${outputPath}`);
 function downloadHtmlBlob(filename, content) {
   const blob = new Blob([content], { type: "text/html;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
+  const a = createEl("a", {
+    href: url,
+    attr: { download: filename }
+  });
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
